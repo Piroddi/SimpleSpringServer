@@ -1,0 +1,32 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    application: hostname-api-service
+  name: hostname-api-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: hostname-api-service
+        application: hostname-api-service
+    spec:
+      containers:
+        - name: hello-world-backend
+          image: hostname-api-service:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP         
+  triggers:
+    - type: "ConfigChange" 
+    - type: "ImageChange" 
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - "hostname-api-service"
+        from:
+          kind: "ImageStreamTag"
+          name: "hostname-api-service:latest"
+  strategy: 
+    type: "Rolling"
